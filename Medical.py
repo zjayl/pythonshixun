@@ -13,7 +13,7 @@ st.set_page_config(page_title="医疗费用预测Web应用", page_icon="🏥")
 
 # 读取数据函数
 def load_data():
-    data_path = "d:\\streamlit_env\\public\\（医疗费用预测数据）insurance-chinese.csv"
+    data_path = "./public/（医疗费用预测数据）insurance-chinese.csv"
     # 尝试不同编码读取文件
     df = pd.read_csv(data_path, encoding='gbk')
     # 重命名列名
@@ -119,3 +119,4 @@ elif nav == "预测医疗费用":
             
             # 显示结果
             st.success(f"预测医疗费用: ¥{prediction[0]:.2f}")
+
