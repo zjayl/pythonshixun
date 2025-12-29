@@ -95,11 +95,6 @@ elif nav == "预测医疗费用":
         model = LinearRegression()
         model.fit(X_train_scaled, y_train)
         
-        # 评估模型
-        y_pred = model.predict(X_test_scaled)
-        r2 = r2_score(y_test, y_pred)
-        st.write(f"模型R²分数: {r2:.4f}")
-        
         return model, scaler
     
     # 预测按钮
@@ -119,4 +114,5 @@ elif nav == "预测医疗费用":
             
             # 显示结果
             st.success(f"预测医疗费用: ¥{prediction[0]:.2f}")
+
 
