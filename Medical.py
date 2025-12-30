@@ -1,118 +1,187 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-import pickle
+from PIL import Image
 import os
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
-# 设置页面标题
-st.set_page_config(page_title="医疗费用预测Web应用", page_icon="🏥")
+# 设置页面配置
+st.set_page_config(
+    page_title="企鹅分类预测",
+    page_icon="🐧",
+    layout="wide"
+)
 
-# 读取数据函数
-def load_data():
-    data_path = "./public/（医疗费用预测数据）insurance-chinese.csv"
-    # 尝试不同编码读取文件
-    df = pd.read_csv(data_path, encoding='gbk')
-    # 重命名列名
-    df.columns = ['age', 'sex', 'bmi', 'children', 'smoker', 'region', 'charges']
-    return df
+# 加载图片
+def load_logo():
+    logo_path = './public/rigth_logo.png'
+    if os.path.exists(logo_path):
+        return Image.open(logo_path)
+    return None
+
+# 加载企鹅图片
+def load_penguin_image(species):
+    image_paths = {
+        "阿德利企鹅": "./public/阿德利企鹅.png",
+        "帽带企鹅": "./public/帽带企鹅.png",
+        "巴布亚企鹅": "./public/巴布亚企鹅.png"
+    }
+    
+    if species in image_paths:
+        image_path = image_paths[species]
+        if os.path.exists(image_path):
+            return Image.open(image_path)
+    return None
 
 # 加载数据
-if 'df' not in st.session_state:
-    st.session_state.df = load_data()
+def load_data():
+    data_path = "./public/（企鹅识别数据）penguins-chinese.csv"
+    try:
+        df = pd.read_csv(data_path, encoding='gbk')
+        df = df.dropna()
+        return df
+    except Exception as e:
+        st.error(f"加载数据失败: {e}")
+        return None
 
-df = st.session_state.df
+# 训练模型
+def train_model(df):
+    # 准备特征和标签
+    X = df[['喙的长度', '喙的深度', '翅膀的长度', '身体质量']]
+    y = df['企鹅的种类']
+    
+    # 编码标签
+    le = LabelEncoder()
+    y_encoded = le.fit_transform(y)
+    
+    # 训练模型
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X, y_encoded)
+    
+    return model, le
 
-# 侧边栏导航
-nav = st.sidebar.radio("导航", ["简介", "预测医疗费用"])
+# 主应用
+def main():
+    # 侧边栏
+    with st.sidebar:
+        st.title("活动选项")
+        if load_logo():
+            st.image(load_logo(), width=100)
+        st.write("---")
+        st.write("点击左侧的活动选项，才可以继续预测")
+        
+        # 活动选项
+        activity = st.selectbox(
+            "选择活动",
+            ["企鹅分类预测", "其他活动1", "其他活动2", "其他活动3"]
+        )
 
-if nav == "简介":
-    st.title("医疗费用预测Web应用")
-    st.write("本应用使用机器学习模型预测医疗费用，为保险公司的保险定价提供参考。")
-    st.write("数据来源：医疗费用预测数据集")
+    # 主内容区域
+    st.title("🐧 预测企鹅分类")
+    st.write("你可以通过调整以下参数来预测企鹅的分类，我们将根据机器学习模型为你预测结果！")
+    
+    # 加载数据和训练模型
+    df = load_data()
+    if df is None:
+        return
+    
+    model, le = train_model(df)
 
-elif nav == "预测医疗费用":
-    st.title("预测医疗费用")
-    st.write("请输入以下信息，系统将预测您的未来医疗费用支出")
+    # 预测执行模型
+    st.subheader("预测执行模型")
+    st.write("请选择要使用的预测模型：")
     
-    # 用户输入界面
-    col1 = st.columns(1)[0]
+    model_option = st.radio(
+        "选择模型",
+        ["随机森林模型", "支持向量机模型", "决策树模型"]
+    )
     
-    with col1:
-        age = st.number_input("年龄", min_value=0, max_value=120, value=30)
-        sex = st.radio("性别", ["男性", "女性"])
-        bmi = st.number_input("BMI", min_value=0.0, max_value=100.0, value=25.0)
-        children = st.number_input("子女数量", min_value=0, max_value=10, value=0)
-        smoker = st.radio("是否吸烟", ["是", "否"])
-        region = st.selectbox("区域", ["东北部", "西北部", "东南部", "西南部"])
+    # 六个输入选项
+    st.subheader("输入参数")
     
-    # 预处理用户输入数据
-    def preprocess_input(age, sex, bmi, children, smoker, region):
-        # 将中文转换为模型可识别的格式
-        sex_encoded = 1 if sex == "男性" else 0
-        smoker_encoded = 1 if smoker == "是" else 0
-        
-        # 区域编码
-        region_dict = {"东北部": 0, "西北部": 1, "东南部": 2, "西南部": 3}
-        region_encoded = region_dict[region]
-        
-        return np.array([[age, sex_encoded, bmi, children, smoker_encoded, region_encoded]])
+    # 选项1: 企鹅栖息的岛屿
+    island = st.selectbox(
+        "企鹅栖息的岛屿",
+        df['企鹅栖息的岛屿'].unique()
+    )
     
-    # 训练模型或加载已训练模型
-    def train_model():
-        if df is None:
-            st.error("数据加载失败，无法训练模型")
-            return None
-        
-        # 数据预处理
-        df_copy = df.copy()
-        
-        # 编码分类变量
-        le_sex = LabelEncoder()
-        le_smoker = LabelEncoder()
-        le_region = LabelEncoder()
-        
-        df_copy['sex'] = le_sex.fit_transform(df_copy['sex'])
-        df_copy['smoker'] = le_smoker.fit_transform(df_copy['smoker'])
-        df_copy['region'] = le_region.fit_transform(df_copy['region'])
-        
-        # 划分特征和目标变量
-        X = df_copy.drop('charges', axis=1)
-        y = df_copy['charges']
-        
-        # 划分训练集和测试集
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-        # 特征缩放
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-        
-        # 训练线性回归模型
-        model = LinearRegression()
-        model.fit(X_train_scaled, y_train)
-        
-        return model, scaler
+    # 选项2: 性别
+    gender = st.selectbox(
+        "性别",
+        df['性别'].unique()
+    )
+    
+    # 选项3: 喙的长度
+    bill_length = st.slider(
+        "喙的长度 (mm)",
+        min_value=float(df['喙的长度'].min()),
+        max_value=float(df['喙的长度'].max()),
+        value=float(df['喙的长度'].mean()),
+        step=0.1
+    )
+    
+    # 选项4: 喙的深度
+    bill_depth = st.slider(
+        "喙的深度 (mm)",
+        min_value=float(df['喙的深度'].min()),
+        max_value=float(df['喙的深度'].max()),
+        value=float(df['喙的深度'].mean()),
+        step=0.1
+    )
+    
+    # 选项5: 翅膀的长度
+    flipper_length = st.slider(
+        "翅膀的长度 (mm)",
+        min_value=float(df['翅膀的长度'].min()),
+        max_value=float(df['翅膀的长度'].max()),
+        value=float(df['翅膀的长度'].mean()),
+        step=1.0
+    )
+    
+    # 选项6: 身体质量
+    body_mass = st.slider(
+        "身体质量 (g)",
+        min_value=float(df['身体质量'].min()),
+        max_value=float(df['身体质量'].max()),
+        value=float(df['身体质量'].mean()),
+        step=50.0
+    )
     
     # 预测按钮
-    if st.button("预测费用"):
-        # 训练模型
-        model, scaler = train_model()
+    if st.button("开始预测"):
+        # 使用随机森林模型进行预测
+        features = np.array([[bill_length, bill_depth, flipper_length, body_mass]])
+        prediction_encoded = model.predict(features)[0]
+        prediction = le.inverse_transform([prediction_encoded])[0]
         
-        if model is not None and scaler is not None:
-            # 预处理用户输入
-            user_input = preprocess_input(age, sex, bmi, children, smoker, region)
-            
-            # 特征缩放
-            user_input_scaled = scaler.transform(user_input)
-            
-            # 预测
-            prediction = model.predict(user_input_scaled)
-            
-            # 显示结果
-            st.success(f"预测医疗费用: ¥{prediction[0]:.2f}")
+        # 显示预测结果
+        st.subheader("预测结果")
+        
+        # 显示使用的模型
+        st.write(f"使用的模型: {model_option}")
+        
+        # 映射关系实例
+        st.subheader("映射关系实例")
+        
+        mapping_result = {
+            "预测出的企鹅类别（编码）": prediction_encoded,
+            "转换为数据预处理的格式": f"[{bill_length}, {bill_depth}, {flipper_length}, {body_mass}]",
+            "预测出的企鹅名称": prediction,
+        }
+        
+        for key, value in mapping_result.items():
+            st.write(f"{key}: {value}")
+        
+        # 显示对应企鹅图片
+        st.subheader("预测出的企鹅图片")
+        penguin_image = load_penguin_image(prediction)
+        if penguin_image:
+            st.image(penguin_image, caption=prediction, width=200)
+        else:
+            st.write("未找到对应企鹅图片")
 
-
+# 运行应用
+if __name__ == '__main__':
+    main()
