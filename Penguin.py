@@ -16,7 +16,7 @@ st.set_page_config(
 
 # 加载图片
 def load_logo():
-    logo_path = 'public\rigth_logo.png'
+    logo_path = './public/rigth_logo.png'
     if os.path.exists(logo_path):
         return Image.open(logo_path)
     return None
@@ -24,9 +24,9 @@ def load_logo():
 # 加载企鹅图片
 def load_penguin_image(species):
     image_paths = {
-        "阿德利企鹅": "public\阿德利企鹅.png",
-        "帽带企鹅": "public\帽带企鹅.png",
-        "巴布亚企鹅": "public\巴布亚企鹅.png"
+        "阿德利企鹅": "./public/阿德利企鹅.png",
+        "帽带企鹅": "./public/帽带企鹅.png",
+        "巴布亚企鹅": "./public/巴布亚企鹅.png"
     }
     
     if species in image_paths:
@@ -37,7 +37,7 @@ def load_penguin_image(species):
 
 # 加载数据
 def load_data():
-    data_path = "public\（企鹅识别数据）penguins-chinese.csv"
+    data_path = "./public/（企鹅识别数据）penguins-chinese.csv"
     try:
         df = pd.read_csv(data_path, encoding='gbk')
         df = df.dropna()
