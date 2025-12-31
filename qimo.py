@@ -286,10 +286,11 @@ elif nav == "测试成绩":
         # 显示祝贺信息
         if predicted_grade >= 60:
             st.success("恭喜！您的预测成绩及格了！")
-            st.image("./public/public/guole.jpg", caption="庆祝一下！", width=500)
+            st.image("./public/guole.jpg", caption="庆祝一下！", width=500)
         else:
             st.warning("需要继续努力哦！")
-            st.image("./public/public/guake.jpg", caption="继续加油！", width=500)
+            st.image("./public/guake.jpg", caption="继续加油！", width=500)
     
 
     
+
