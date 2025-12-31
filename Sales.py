@@ -31,7 +31,7 @@ st.set_page_config(
 )
 
 # 读取Excel数据文件
-data_path = "D:\streamlit_env\public\（商场销售数据）supermarket_sales.xlsx"
+data_path = ".\public\（商场销售数据）supermarket_sales.xlsx"
 try:
     # 正确读取Excel文件，数据从第2行开始
     df = pd.read_excel(data_path, header=1)
@@ -155,4 +155,5 @@ with chart_col2:
             width=500,
             height=300
         )
+
         st.altair_chart(chart2, width='stretch')
