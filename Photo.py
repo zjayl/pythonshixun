@@ -10,7 +10,7 @@ st.set_page_config(
 # 示例图片数据 - 使用在线图片URL和对应的图注
 photos_data = [
     {
-        "url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        "url": "https:www.bing.com/images/search?q=小猫&FORM=HDRSC3",
         "caption": "可爱的橘猫，阳光照射下显得格外温暖"
     },
     {
@@ -56,4 +56,5 @@ with col2:
     with btn_col2:
         if st.button("下一张"):
             st.session_state.current_index = (st.session_state.current_index + 1) % len(photos_data)
+
             st.rerun()
