@@ -49,9 +49,9 @@ if nav == "项目介绍":
             
             # 图片列表和对应的图注
             image_data = [
-                {"path": "D:\streamlit_env\public\index1.png", "caption": "项目展示图1：系统主界面"},
-                {"path": "D:\streamlit_env\public\index2.png", "caption": "项目展示图2：数据分析可视化"},
-                {"path": "D:\streamlit_env\public\index3.png", "caption": "项目展示图3：成绩预测功能"}
+                {"path": "./public/index1.png", "caption": "项目展示图1：系统主界面"},
+                {"path": "./public/index2.png", "caption": "项目展示图2：数据分析可视化"},
+                {"path": "./public/index3.png", "caption": "项目展示图3：成绩预测功能"}
             ]
             
             # 显示当前图片
@@ -286,9 +286,10 @@ elif nav == "测试成绩":
         # 显示祝贺信息
         if predicted_grade >= 60:
             st.success("恭喜！您的预测成绩及格了！")
-            st.image("D:\streamlit_env\public\guole.jpg", caption="庆祝一下！", width=500)
+            st.image("./public/public/guole.jpg", caption="庆祝一下！", width=500)
         else:
             st.warning("需要继续努力哦！")
-            st.image("D:\streamlit_env\public\guake.jpg", caption="继续加油！", width=500)
+            st.image("./public/public/guake.jpg", caption="继续加油！", width=500)
     
+
     
